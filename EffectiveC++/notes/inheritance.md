@@ -229,3 +229,30 @@ Create a separate class for `HealthCalculation` and move all the virtual functio
 ```
 
 # Never redefine an inherited non-virtual function
+- If there is a need to do this in public inheritance, then the whole point of inheritance is lost. The "is-a" relationship becomes questionable.
+
+# Never redefine a function's inherited default parameter value
+- Let's look at only virtual functions, because as per the previous item, we wont be redefining non-virtual functions
+- Consider the following example:
+```C++
+
+    class Shape {
+    public:
+        enum ShapeColor { Red, Green, Blue };
+        virtual void draw(ShapeColor color = Red) const = 0;
+    };
+
+    class Rectangle {
+    public:
+        virtual void draw(ShapeColor color = Green) const;
+    };
+
+    Shape *pr = new Rectangle();
+    pr -> draw(); // what color will be used? Red or Green?
+```
+- See [here](../code-samples/dont_redefine_inherited_default_values.cpp) for code.
+- The problem is that the default parameter value is bound statically, at compile time, whereas the virtual function going to be used is bound dynamically. So, the default parameter value of the base class is used, not the derived class. This is because the compiler doesn't know which derived class is going to be used at run-time.
+- Also, if the default value needs to be changed in the Shape class, it also needs to be changed in all the derived classes. This is a maintenance nightmare.
+
+* How to avoid this? By using the alternative designs discussed earlier. 
+* See [here](../code-samples/dont_redefine_inherited_default_values_alternative.cpp) for code.
