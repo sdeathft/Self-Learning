@@ -163,3 +163,69 @@ Consider the following design:
 ```
 See [here](../code-samples/nvi_idiom.cpp) for more details.
 
+### Strategy Pattern via function pointers
+* The idea is that since calculation of healthValue is the same for all characters, it shouldn't be a part of the character at all!
+* We create a non-member function, and pass it as a pointer to the constructor to the character class.
+```C++
+    class GameCharacter {
+    public:
+        // define a function pointer type
+        typedef int (*HealthCalcFunc)(const GameCharacter&);
+
+        // pass this pointer to the constructor
+        explicit GameCharacter(HealthCalcFunc hcf = defaultHealthCalc) : healthFunc(hcf) {}
+        
+        // use the pointer to calculate the value of health
+        int healthValue() const { return healthFunc(*this); }
+    private:
+        HealthCalcFunc healthFunc;
+    };
+```
+* Some interesting flexibilities:
+  * Different instances of the same character type can have different health calculation functions.
+  * Health calculation functions maybe changed at the run-time.
+* Issues:
+  * The calculation function cannot use the inner variables of the class.
+
+### Strategy Pattern via functors
+* Use functors instead of function pointers.
+```C++
+    #include <functional>
+
+    class GameCharacter;
+    int defaultHealthCalc(const GameCharacter &gc);
+
+    class GameCharacter {
+    public:
+        // define a functor type
+        typedef std::function<int (const GameCharacter&)> HealthCalcFunc;
+
+        // pass this functor to the constructor
+        explicit GameCharacter(HealthCalcFunc hcf = defaultHealthCalc) : healthFunc(hcf) {}
+        
+        // use the functor to calculate the value of health
+        int healthValue() const { return healthFunc(*this); }
+    private:
+        HealthCalcFunc healthFunc;
+    };
+```
+
+## Virtual functions in another hierarchy
+Create a separate class for `HealthCalculation` and move all the virtual functions to that class. Then, inherit that class in the `GameCharacter` class.
+```C++
+    class HealthCalcFunc {
+    public:
+        virtual int calc(const GameCharacter& gc) const;
+    };
+
+    class GameCharacter {
+    public:
+        explicit GameCharacter(HealthCalcFunc hcf = defaultHealthCalc) : healthFunc(hcf) {}
+        
+        int healthValue() const { return healthFunc.calc(*this); }
+    private:
+        HealthCalcFunc healthFunc;
+    };
+```
+
+# Never redefine an inherited non-virtual function
