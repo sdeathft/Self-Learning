@@ -313,3 +313,49 @@ Consider the following class:
 - See [this](../code-samples/ebo.cpp) for code example.
 
 # Use multiple inheritance judiciously
+- Inheriting from multiple classes
+- Possible to inherit the same name(function, typedef, variable) from multiple classes
+~~~C++
+    class A {
+    public:
+        void mf();
+    };
+
+    class B {
+    private:
+        void mf();
+    };
+
+    class D : public A, public B {
+ 
+    };
+
+    D d;
+    d.mf();
+~~~
+- The call to mf() is ambiguous, although only one mf is accessible.
+  
+## Deadly Diamond
+~~~C++
+
+class File {};
+
+class InputFile : public File {};
+class OutputFile : public File {};
+
+class IOFile : public InputFile, public OutputFile {};
+~~~
+
+- 2 paths from Base class `File` to derived class `IOFile`. Should IOFile have 2 copies of File? No. This is called the Diamond problem.
+  - To see why, even the filename is copied twice, and it's not reasonable to have 2 filenames for a single file. 
+- To avoid this, we make File a `virtual` base class.
+
+~~~C++
+
+class File {};
+
+class InputFile : virtual public File {};
+class OutputFile : virtual public File {};
+
+class IOFile : public InputFile, public OutputFile {};
+~~~
