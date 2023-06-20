@@ -161,5 +161,5 @@ Consider the following design:
         virtual int doHealthValue() const; // virtual function, that the derived classes redefine
     };
 ```
-See [here](../tests/nvi_idiom.cpp) for more details.
+See [here](../code-samples/nvi_idiom.cpp) for more details.
 
