@@ -256,3 +256,60 @@ Create a separate class for `HealthCalculation` and move all the virtual functio
 
 * How to avoid this? By using the alternative designs discussed earlier. 
 * See [here](../code-samples/dont_redefine_inherited_default_values_alternative.cpp) for code.
+
+# Model "has-a" or "is-implemented-in-terms-of" through composition
+- Application domain - easy to identify:
+  - For eg: A person "has a" phone number, "has an" address. 
+- Implementation Domain - hard to recognize:
+  - Set "is implemented in terms of" list
+
+# Use private inheritance judiciously
+* Private inheritance means "is-implemented-in-terms-of". It is not an "is-a" relationship.
+* Two rules:
+  * Compiler will not convert an object of type D to type B
+  * All members of the base class become private in the derived class.
+* If D derives privately from B, then, D is not a B, but it is implemented in terms of B. It takes advantage of some features available in class B. Only implementation is inherited, interface is ignored.
+
+Example: Suppose we want to get the stats related to a Widget at regular intervals of time. We can privately inherit the Widget class from the timer class.
+~~~C++
+    class Timer {
+        public:
+            explicit Timer(int tickFrequency);
+            virtual void onTick() const;
+    };
+
+    class Widget : private Timer {
+    private:
+        virtual void onTick() const; // can be used to get the Widget data..
+    };
+~~~
+
+Another design, avoiding private inheritance is also possible.
+~~~C++
+    class Widget {
+    private:
+        class WidgetTimer : public Timer {
+        public:
+            virtual void onTick() const;
+        };
+    public:
+        WidgetTimer timer;
+    };
+~~~
+
+## Pros and Cons of the above two designs:
+- The first design is more efficient, because it avoids the overhead of the extra function call.
+- Private inheritance design doesn't disallow possible derived classes of Widget, from re-defining the onTick() function(Recall that even though the virtual function is private, the derived class can still redefine it, it just can't call it). This isn't possible in case of the second design, because WidgetTimer is a private variable in the Widget class, and hence, it can't be accessed by the derived classes of Widget.
+- The second design is more flexible, because it allows the Widget class to have multiple timers, if needed. The first design doesn't allow this.
+- The second design has lesser compiler dependencies, because the Widget class doesn't need to know about the Timer class. The first design needs to know about the Timer class.
+
+## Edge case - EBO(Emply Base Optimization)
+Consider the following class:
+```C++
+    class Empty {};
+```
+- The size of this class is 1, and not 0, to distinguish this object from other objects. 
+- If this class is inherited privately, then the size of the derived class is 0. This is because, the derived class doesn't need to store any information about the base class, because it is private. This is called Empty Base Optimization.
+- See [this](../code-samples/ebo.cpp) for code example.
+
+# Use multiple inheritance judiciously
