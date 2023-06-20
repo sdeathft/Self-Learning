@@ -152,13 +152,14 @@ Consider the following design:
     class GameCharacter {
     public:
         int healthValue() const { // non-virtual function, that the derived classes don't redefine
-            // do some stuff here
+            // do "before" stuff here
             int retVal = doHealthValue();
-            // do some other stuff here
+            // do "after" stuff here
             return retVal;
         }
     private:
         virtual int doHealthValue() const; // virtual function, that the derived classes redefine
     };
 ```
+See [here](../tests/nvi_idiom.cpp) for more details.
 
