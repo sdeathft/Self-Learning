@@ -1,0 +1,13 @@
+// #include <iostream>
+// #include <vector>
+// #include <memory>
+
+class A; // no definition
+
+int main() {
+
+  int x;
+  A a; // this is a compilation error! Why? How does the compiler know the amount of memory it has to allocate in the stack?
+  
+  return 0;
+}
