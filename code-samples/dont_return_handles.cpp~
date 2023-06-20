@@ -1,0 +1,27 @@
+#include <iostream>
+#include <vector>
+#include <memory>
+
+class Point {
+  int x, y;
+
+public:
+  Point(int x_, int y_) : x(x_), y(y_) {}
+};
+
+int main() {
+
+  std::vector<std::shared_ptr<Base>> ptrs;
+
+  for (auto ptr : ptrs) {
+    ptr -> onResize();
+  }
+  // Derived d;
+  // Base *bptr = &d; // allowed
+
+  // std::cout << (bptr == &d) << std::endl;
+  
+  // d.onResize();
+
+  return 0;
+}
