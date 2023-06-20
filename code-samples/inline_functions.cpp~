@@ -1,0 +1,13 @@
+#include <iostream>
+#include <vector>
+#include <memory>
+
+inline void f(int a, int b) {
+  std::cout << "hello inline\n";
+}
+
+int main() {
+  
+  
+  return 0;
+}
